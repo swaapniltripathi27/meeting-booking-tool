@@ -1,19 +1,15 @@
 from flask import Flask, render_template, request, jsonify, redirect
-import os
 import sqlite3
-import smtplib
-from email.message import EmailMessage
-from ics import Calendar, Event
+import os
 
 app = Flask(__name__)
+
 
 # ----------------------------
 # DATABASE INITIALIZATION
 # ----------------------------
 
-
 def init_db():
-
     conn = sqlite3.connect("database.db")
     c = conn.cursor()
 
@@ -32,14 +28,10 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+
+# Run database initialization when app loads
 init_db()
-
-# ----------------------------
-# EMAIL CONFIGURATION
-# ----------------------------
-
-SENDER_EMAIL = "swaapnil.tripathi27@gmail.com"
-SENDER_PASSWORD = "vgkzsstwnoyfzeqd"
 
 
 # ----------------------------
@@ -62,84 +54,6 @@ leaders = [
     "Vasu",
     "Hridey"
 ]
-
-
-# ----------------------------
-# LEADER EMAIL MAPPING
-# ----------------------------
-
-leader_emails = {
-    "Mohit Joshi": "mohit.joshi@techmahindra.com",
-    "Manish Mangal": "manish.mangal@techmahindra.com",
-    "Harshul Asnani": "harshul.asnani@techmahindra.com",
-    "Jena": "jena@techmahindra.com",
-    "Sandeep": "sandeep@techmahindra.com",
-    "Harsh": "harsh@techmahindra.com",
-    "Dom": "dom@techmahindra.com",
-    "Gaurav": "gaurav@techmahindra.com",
-    "Praveen": "praveen@techmahindra.com",
-    "Ashwini": "ashwinikarthik.jonnakadla@TechMahindra.com",
-    "Swaapnil": "swaapnil.tripathi@TechMahindra.com",
-    "Arun": "AR0060126@TechMahindra.com",
-    "Vasu": "Vasu.Mudgal@TechMahindra.com",
-    "Hridey":"Hridey.Asnani@TechMahindra.com"
-}
-
-
-
-# ----------------------------
-# CALENDAR INVITE FUNCTION
-# ----------------------------
-from datetime import datetime
-
-
-def send_calendar_invite(leader, date, time, client, organisation):
-
-    leader_email = leader_emails.get(leader)
-
-    if not leader_email:
-        return
-
-    start_time = time.split("-")[0]
-    end_time = time.split("-")[1]
-
-    # Convert date like "2 March" to proper format
-    year = 2026
-    date_obj = datetime.strptime(f"{date} {year}", "%d %B %Y")
-
-    start_datetime = datetime.strptime(
-        f"{date_obj.date()} {start_time}", "%Y-%m-%d %H:%M"
-    )
-
-    end_datetime = datetime.strptime(
-        f"{date_obj.date()} {end_time}", "%Y-%m-%d %H:%M"
-    )
-
-    event = Event()
-    event.name = f"Meeting with {organisation}"
-    event.begin = start_datetime
-    event.end = end_datetime
-    event.description = f"Client: {client}\nOrganisation: {organisation}"
-
-    calendar = Calendar()
-    calendar.events.add(event)
-
-    msg = EmailMessage()
-    msg["Subject"] = f"Meeting Invite - {organisation}"
-    msg["From"] = SENDER_EMAIL
-    msg["To"] = leader_email
-
-    msg.set_content("Calendar invite attached")
-
-    msg.add_attachment(
-        str(calendar),
-        subtype="calendar",
-        filename="meeting_invite.ics"
-    )
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
-        smtp.send_message(msg)
 
 
 # ----------------------------
@@ -219,54 +133,12 @@ def book():
     conn.commit()
     conn.close()
 
-    # SEND OUTLOOK CALENDAR INVITE
-    send_calendar_invite(leader, date, time, client, organisation)
-
     return redirect("/")
-
-def save_to_excel(date, time, leader, client, designation, organisation, opportunity):
-
-    file = "meetings.xlsx"
-
-    # Create file if it does not exist
-    if not os.path.exists(file):
-
-        wb = Workbook()
-        ws = wb.active
-
-        ws.append([
-            "Date",
-            "Time",
-            "Leader",
-            "Client Name",
-            "Designation",
-            "Organisation",
-            "Opportunity Size"
-        ])
-
-        wb.save(file)
-
-    wb = load_workbook(file)
-    ws = wb.active
-
-    ws.append([
-        date,
-        time,
-        leader,
-        client,
-        designation,
-        organisation,
-        opportunity
-    ])
-
-    wb.save(file)
 
 
 # ----------------------------
 # START APP
 # ----------------------------
-
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
