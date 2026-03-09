@@ -7,8 +7,6 @@ from email.message import EmailMessage
 from ics import Calendar, Event
 
 app = Flask(__name__)
-init_db()
-
 
 # ----------------------------
 # EMAIL CONFIGURATION
@@ -270,5 +268,6 @@ def save_to_excel(date, time, leader, client, designation, organisation, opportu
 import os
 
 if __name__ == "__main__":
+    init_db()
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
