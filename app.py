@@ -9,6 +9,32 @@ from ics import Calendar, Event
 app = Flask(__name__)
 
 # ----------------------------
+# DATABASE INITIALIZATION
+# ----------------------------
+
+
+def init_db():
+
+    conn = sqlite3.connect("database.db")
+    c = conn.cursor()
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS meetings(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT,
+        time TEXT,
+        leader TEXT,
+        client_name TEXT,
+        designation TEXT,
+        organisation TEXT,
+        opportunity_size TEXT
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+# ----------------------------
 # EMAIL CONFIGURATION
 # ----------------------------
 
@@ -59,30 +85,6 @@ leader_emails = {
     "Hridey":"Hridey.Asnani@TechMahindra.com"
 }
 
-# ----------------------------
-# DATABASE INITIALIZATION
-# ----------------------------
-
-def init_db():
-
-    conn = sqlite3.connect("database.db")
-    c = conn.cursor()
-
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS meetings(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT,
-        time TEXT,
-        leader TEXT,
-        client_name TEXT,
-        designation TEXT,
-        organisation TEXT,
-        opportunity_size TEXT
-    )
-    """)
-
-    conn.commit()
-    conn.close()
 
 
 # ----------------------------
