@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Tech Mahindra Meeting Booking</title>
+</head>
+
+<body>
+
+<h2>Tech Mahindra Meeting Booking</h2>
+
+<form action="/book" method="post">
+
+<label>Select Date</label>
+<select name="date" id="date">
+{% for d in dates %}
+<option value="{{d}}">{{d}}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+
+<label>Select Time Slot</label>
+<select name="time" id="time">
+{% for t in times %}
+<option value="{{t}}">{{t}}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+
+<label>Select TechM Leader</label>
+<select name="leader" id="leader">
+{% for l in leaders %}
+<option value="{{l}}">{{l}}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+
+<label>Client Name</label>
+<input type="text" name="client" required>
+
+<br><br>
+
+
+<label>Designation</label>
+<input type="text" name="designation">
+
+<br><br>
+
+
+<label>Organisation</label>
+<input type="text" name="organisation">
+
+<br><br>
+
+
+<label>Opportunity Size</label>
+<input type="text" name="opportunity">
+
+<br><br>
+
+
+<button type="submit">Book Meeting</button>
+
+</form>
+
+
+<script>
+
+function updateLeaders(){
+
+    const date = document.getElementById("date").value
+    const time = document.getElementById("time").value
+
+    fetch(`/available_leaders?date=${date}&time=${time}`)
+    .then(response => response.json())
+    .then(data => {
+
+        const leaderDropdown = document.getElementById("leader")
+
+        leaderDropdown.innerHTML = ""
+
+        data.leaders.forEach(function(leader){
+
+            const option = document.createElement("option")
+
+            option.value = leader
+            option.text = leader
+
+            leaderDropdown.appendChild(option)
+
+        })
+
+    })
+
+}
+
+document.getElementById("date").addEventListener("change", updateLeaders)
+document.getElementById("time").addEventListener("change", updateLeaders)
+window.onload = updateLeaders;
+</script>
+
+
+</body>
+</html>
