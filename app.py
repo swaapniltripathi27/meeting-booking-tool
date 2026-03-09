@@ -7,6 +7,7 @@ from email.message import EmailMessage
 from ics import Calendar, Event
 
 app = Flask(__name__)
+init_db()
 
 
 # ----------------------------
@@ -271,6 +272,3 @@ import os
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
-
-    init_db()
-    app.run(debug=True, port=8000)
