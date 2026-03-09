@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify, redirect
-from openpyxl import Workbook, load_workbook
 import os
 import sqlite3
 import smtplib
@@ -219,7 +218,6 @@ def book():
 
     conn.commit()
     conn.close()
-    save_to_excel(date, time, leader, client, designation, organisation, opportunity)
 
     # SEND OUTLOOK CALENDAR INVITE
     send_calendar_invite(leader, date, time, client, organisation)
